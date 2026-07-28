@@ -3,199 +3,321 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MP4 Mobile Scroll Control</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html, body {
-            width: 100%;
-            overflow-x: hidden;
-            /* 禁用移动端下拉刷新及橡皮筋弹簧效果 */
-            overscroll-behavior-y: none;
-            /* 限制触屏滑动手势 */
-            touch-action: pan-y;
-            background-color: #000000;
-            color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-
-        /* 页面滑动行程：定义为 5 倍屏幕高度 */
-        body {
-            height: 500vh;
-        }
-
-        /* 视频固定背景容器 */
-        .video-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            height: 100svh; /* 兼容 iOS 动态地址栏 */
-            overflow: hidden;
-            z-index: 1;
-        }
-
-        .bg-video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -1;
-            /* 开启硬件加速 */
-            transform: translateZ(0);
-            will-change: transform;
-        }
-
-        /* 覆盖层内容 */
-        .content-layer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            height: 100svh;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 24px;
-            /* 穿透触摸手势，确保滑动顺畅 */
-            pointer-events: none;
-        }
-
-        .content-layer h1 {
-            font-size: 2rem;
-            margin-bottom: 0.8rem;
-            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
-        }
-
-        .content-layer p {
-            font-size: 1rem;
-            opacity: 0.85;
-            max-width: 85%;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
-        }
-
-        /* 加载指示器 */
-        .loading-mask {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            height: 100svh;
-            background-color: #000;
-            z-index: 99;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1rem;
-            color: #888;
-            transition: opacity 0.3s ease;
-        }
-    </style>
+    <title>Xiaoyi Liu - Portfolio</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 <body>
 
-    <div class="loading-mask" id="loadingMask">正在加载 MP4 视频资源...</div>
+<!-------------Main Body Wrapper (1200px Max Width)-------------------->
+<div id="main_body" class="main_body">
 
-    <div class="video-container">
-        <!-- 适配移动端必须的属性：muted, playsinline, preload="auto" -->
-        <video 
-            id="mp4Video" 
-            class="bg-video"
-            muted 
-            playsinline 
-            preload="auto" 
-            poster="fallback-image.jpg"
-        >
-            <source src="home_animation.mp4" type="video/mp4">
-            您的浏览器不支持 HTML5 视频。
-        </video>
+  <header class="header">
+    <nav class="navbar" aria-label="Main Navigation">
+      <a href="#" class="logo"><img src="images/logo_yellow.png" alt="Portfolio Logo"></a>
+
+      <button 
+        class="nav-toggle" 
+        id="navToggle" 
+        aria-expanded="false" 
+        aria-controls="navMenu" 
+        aria-label="Toggle navigation menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+
+      <!-- Full Screen Navigation Menu -->
+      <div class="nav-menu" id="navMenu">
+        <ul class="nav-list">
+          <li>
+            <a href="#home" class="nav-link">Home</a>
+          </li>
+
+          <!-- Projects Dropdown -->
+          <li class="dropdown" id="projectsDropdown">
+            <button 
+              class="nav-link dropdown-btn" 
+              aria-expanded="false" 
+              aria-controls="projectsSubmenu">
+              Projects <span class="dropdown-arrow">▼</span>
+            </button>
+            <ul class="submenu" id="projectsSubmenu">
+              <li><a href="#maze-game" class="nav-link">Maze Game</a></li>
+              <li><a href="#covid-poster" class="nav-link">Covid-19 Poster</a></li>
+              <li><a href="#drill-jig" class="nav-link">Drill Jig Assembly</a></li>
+              <li><a href="#atypi-guide" class="nav-link">ATYPI 19 Guide Design</a></li>
+              <li><a href="#tableau-project" class="nav-link">Superstore Tableau Project</a></li>
+              <li><a href="#phone-dies" class="nav-link">What if your phone dies</a></li>
+              <li><a href="#coffee-brochure" class="nav-link">Coffee Brochure Project</a></li>
+            </ul>
+          </li>
+
+          <li>
+            <a href="#contact" class="nav-link">Contact Me</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+<!------------- Hero Text Overlay (0s mark) ------------->
+  <div class="hero-content" id="heroText">
+    <h1 class="hero-title">I am Xiaoyi Liu</h1>
+    <p class="hero-subtitle">Welcome to my website; I am a programmer, designer, and data analyst.</p>
+    
+    <!-- tips -->
+    <div class="scroll-indicator">
+      <span class="scroll-text">Scroll Down</span>
+      <div class="scroll-arrow">
+        <span></span>
+      </div>
     </div>
+  </div>
 
-    <div class="content-layer">
-        <h1>Hello</h1>
+  <!------------- Education Overlay (00:02 mark) ------------->
+  <div class="education-content" id="educationText">
+    <h2 class="edu-main-title">Education</h2>
+    <div class="edu-grid">
+      <div class="edu-card">
+        <h3 class="edu-degree">Data Analysis Training</h3>
+        <p class="edu-school">St. Nicks Alliance / General Assembly</p>
+        <p class="edu-date">Oct. 2023 – Dec. 2023</p>
+        <p class="edu-location">10 E 21st St, New York, NY 10010</p>
+      </div>
+
+      <div class="edu-card">
+        <h3 class="edu-degree">Digital Design</h3>
+        <p class="edu-school">The City College of New York</p>
+        <p class="edu-date">2021 – 2023</p>
+        <p class="edu-location">160 Convent Ave, New York, NY 10031</p>
+      </div>
+
+      <div class="edu-card">
+        <h3 class="edu-degree">Game Development</h3>
+        <p class="edu-school">LaGuardia Community College</p>
+        <p class="edu-date">2018 – 2020</p>
+        <p class="edu-location">31-10 Thomson Ave, Long Island City, NY 11101</p>
+      </div>
+
+      <div class="edu-card">
+        <h3 class="edu-degree">Computer Application</h3>
+        <p class="edu-school">Suihua School</p>
+        <p class="edu-date">2012 – 2015</p>
+        <p class="edu-location">China</p>
+      </div>
     </div>
+  </div>
 
-    <script>
-        const video = document.getElementById('mp4Video');
-        const loadingMask = document.getElementById('loadingMask');
+  <!------------- Work Overlay (00:05 mark) ------------->
+  <div class="work-content" id="workText">
+    <h2 class="work-main-title">Work Experience</h2>
+    <div class="work-grid">
+      <div class="work-card">
+        <h3 class="work-role">Data Manager</h3>
+        <p class="work-company">Research Foundation of CUNY - Liberty Partnerships Program's Urban Scholars Program at City College of New York</p>
+        <p class="work-date">January 2025 – Present</p>
+        <p class="work-location">Manhattan, New York</p>
+      </div>
 
-        let targetTime = 0;
-        let isSeeking = false;
-        let rafId = null;
+      <div class="work-card">
+        <h3 class="work-role">IT Business Analyst</h3>
+        <p class="work-company">PS Business Solutions</p>
+        <p class="work-date">December 2024 – Present</p>
+        <p class="work-location">Manhattan, New York</p>
+      </div>
 
-        // 初始化视频绑定
-        function initVideoControl() {
-            if (loadingMask) {
-                loadingMask.style.opacity = '0';
-                setTimeout(() => loadingMask.style.display = 'none', 300);
-            }
+      <div class="work-card">
+        <h3 class="work-role">Data Specialist</h3>
+        <p class="work-company">Research Foundation of CUNY - Liberty Partnerships Program's Urban Scholars Program at City College of New York</p>
+        <p class="work-date">June 2024 – September 2024</p>
+        <p class="work-location">Manhattan, New York</p>
+      </div>
 
-            // 监听窗口滑动（手机触屏擦拭会自动转化为 scroll 事件）
-            window.addEventListener('scroll', onScroll, { passive: true });
-            onScroll(); // 初始化画面
-        }
+      <div class="work-card">
+        <h3 class="work-role">Data Analyst Intern</h3>
+        <p class="work-company">Maimonides Cancer Center</p>
+        <p class="work-date">February 2024 – March 2024</p>
+        <p class="work-location">Brooklyn, New York</p>
+      </div>
 
-        // 确保视频元数据加载完毕
-        if (video.readyState >= 2) {
-            initVideoControl();
-        } else {
-            video.addEventListener('loadeddata', initVideoControl);
-        }
+      <div class="work-card">
+        <h3 class="work-role">Graphic Designer Assistant</h3>
+        <p class="work-company">HY N Ship Printing</p>
+        <p class="work-date">August 2019 – October 2024</p>
+        <p class="work-location">Brooklyn, New York</p>
+      </div>
 
-        function onScroll() {
-            if (!video.duration) return;
+      <div class="work-card">
+        <h3 class="work-role">Graphic Designer</h3>
+        <p class="work-company">Chenlin Graphic & Design</p>
+        <p class="work-date">July 2017 – November 2018</p>
+        <p class="work-location">Manhattan, New York</p>
+      </div>
 
-            // 计算滑动百分比 (0.0 到 1.0)
-            const scrollTop = window.scrollY || document.documentElement.scrollTop;
-            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-            const scrollFraction = Math.max(0, Math.min(1, scrollTop / maxScroll));
+      <div class="work-card">
+        <h3 class="work-role">Web Designer</h3>
+        <p class="work-company">Taobao: Ziqing Clothing Online Store</p>
+        <p class="work-date">October 2013 – April 2015</p>
+        <p class="work-location">China</p>
+      </div>
+    </div>
+  </div>
 
-            // 计算目标时间
-            targetTime = scrollFraction * video.duration;
+  <!------------- Skills Overlay (00:03 mark) ------------->
+  <div class="skills-content" id="skillsText">
+    <h2 class="skills-main-title">Skills & Certifications</h2>
+    <div class="skills-borderless-container">
 
-            // 请求下一帧渲染
-            requestRender();
-        }
+      <!-- Development -->
+      <div class="skills-group">
+        <h3 class="skills-category">Development</h3>
+        <p class="skills-line">
+          <span class="skill-label">Frontend:</span>
+          <span class="particle-word p-1">HTML5,</span> 
+          <span class="particle-word p-2">CSS3,</span> 
+          <span class="particle-word p-3">JavaScript</span>
+        </p>
+        <p class="skills-line">
+          <span class="skill-label">Backend:</span>
+          <span class="particle-word p-4">Python,</span> 
+          <span class="particle-word p-2">MySQL,</span> 
+          <span class="particle-word p-5">SQL</span>
+        </p>
+        <p class="skills-line">
+          <span class="skill-label">Env:</span>
+          <span class="particle-word p-3">VS Code,</span> 
+          <span class="particle-word p-1">GitHub,</span> 
+          <span class="particle-word p-4">WordPress,</span> 
+          <span class="particle-word p-2">Adobe Dreamweaver</span>
+        </p>
+      </div>
 
-        function requestRender() {
-            if (rafId) return;
-            rafId = requestAnimationFrame(updateVideoFrame);
-        }
+      <!-- Design -->
+      <div class="skills-group">
+        <h3 class="skills-category">Design</h3>
+        <p class="skills-line">
+          <span class="skill-label">Adobe Suite:</span>
+          <span class="particle-word p-5">Photoshop,</span> 
+          <span class="particle-word p-1">Illustrator,</span> 
+          <span class="particle-word p-3">InDesign,</span> 
+          <span class="particle-word p-2">Premiere Pro,</span> 
+          <span class="particle-word p-4">After Effects</span>
+        </p>
+      </div>
 
-        function updateVideoFrame() {
-            rafId = null;
+      <!-- 3D & Game -->
+      <div class="skills-group">
+        <h3 class="skills-category">3D & Game</h3>
+        <p class="skills-line">
+          <span class="particle-word p-2">Unity,</span> 
+          <span class="particle-word p-4">Blender,</span> 
+          <span class="particle-word p-1">Unreal,</span> 
+          <span class="particle-word p-3">C++</span>
+        </p>
+      </div>
 
-            // 如果视频正在寻帧中 (Seeking)，暂缓下一次 seek，防止手机硬件堵塞
-            if (isSeeking) return;
+      <!-- Visuals -->
+      <div class="skills-group">
+        <h3 class="skills-category">Visuals</h3>
+        <p class="skills-line">
+          <span class="particle-word p-3">CorelDRAW,</span> 
+          <span class="particle-word p-5">Figma,</span> 
+          <span class="particle-word p-1">Canva,</span> 
+          <span class="particle-word p-4">AutoCAD</span>
+        </p>
+      </div>
 
-            // 当目标时间与视频当前播放时间差值大于微小阈值时才跳转
-            if (Math.abs(video.currentTime - targetTime) > 0.04) {
-                isSeeking = true;
-                video.currentTime = targetTime;
-            }
-        }
+      <!-- Data Analysis -->
+      <div class="skills-group">
+        <h3 class="skills-category">Data Analysis</h3>
+        <p class="skills-line">
+          <span class="skill-label">Languages:</span>
+          <span class="particle-word p-1">SQL,</span> 
+          <span class="particle-word p-3">Python</span>
+        </p>
+        <p class="skills-line">
+          <span class="skill-label">Software:</span>
+          <span class="particle-word p-4">Tableau,</span> 
+          <span class="particle-word p-2">MS Office,</span> 
+          <span class="particle-word p-5">Access,</span> 
+          <span class="particle-word p-1">SQL Server</span>
+        </p>
+      </div>
 
-        // 当视频完成当前帧的渲染定位后，解锁下一个寻找请求
-        video.addEventListener('seeked', () => {
-            isSeeking = false;
-            // 如果在 Seeking 期间用户还在持续滑动屏幕，追赶最新的 targetTime
-            if (Math.abs(video.currentTime - targetTime) > 0.04) {
-                requestRender();
-            }
-        });
-    </script>
+      <!-- Certifications -->
+      <div class="skills-group cert-group">
+        <h3 class="skills-category">Certifications</h3>
+        <div class="cert-item">
+          <p class="cert-name particle-word p-2">Microsoft Office Specialist: Excel Associate</p>
+          <p class="cert-meta">Microsoft | Nov 2023 | ID: 995847681</p>
+        </div>
+        <div class="cert-item">
+          <p class="cert-name beida-particle">Web Design Senior Engineer</p>
+          <p class="cert-meta beida-particle">Beijing Aptech Beida Jade Bird | 2015</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+
+</div><!-------------Main Body-------------------->
+
+<!-------------Animation Background--------------------->   
+<div class="loading-mask" id="loadingMask">&nbsp;</div>
+
+<div class="video-container">
+    <video 
+        id="mp4Video" 
+        class="bg-video"
+        muted 
+        playsinline 
+        preload="auto" 
+        poster="fallback-image.jpg"
+    >
+        <source src="home_video.mp4" type="video/mp4">
+    </video>
+</div>
+
+<!-------------Footer--------------------->
+
+<footer class="footer">
+  <div class="footer-copyright">
+    &copy; 2026 Xiaoyi Liu. All rights reserved.
+  </div>
+  <div class="footer-links">
+    <!-- Instagram Icon -->
+    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="footer-link" aria-label="Instagram">
+      <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+      </svg>
+    </a>
+
+    <!-- LinkedIn Icon -->
+    <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="footer-link" aria-label="LinkedIn">
+      <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
+      </svg>
+    </a>
+
+    <!-- Email Icon & Address -->
+    <a href="mailto:xiaoyiliu96xyl@gmail.com" class="footer-link email-link">
+      <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+        <polyline points="22,6 12,13 2,6"></polyline>
+      </svg>
+    </a>
+  </div>
+</footer>
+
+
+
+
+<!------------JS Files---------------------->
+<script type="text/javascript" src="script/video.js"></script>
+<script type="text/javascript" src="script/navs.js"></script>
 </body>
 </html>
