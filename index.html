@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MP4 Mobile Scroll Control</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            overflow-x: hidden;
+            /* 禁用移动端下拉刷新及橡皮筋弹簧效果 */
+            overscroll-behavior-y: none;
+            /* 限制触屏滑动手势 */
+            touch-action: pan-y;
+            background-color: #000000;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        /* 页面滑动行程：定义为 5 倍屏幕高度 */
+        body {
+            height: 500vh;
+        }
+
+        /* 视频固定背景容器 */
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            height: 100svh; /* 兼容 iOS 动态地址栏 */
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .bg-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            /* 开启硬件加速 */
+            transform: translateZ(0);
+            will-change: transform;
+        }
+
+        /* 覆盖层内容 */
+        .content-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            height: 100svh;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 24px;
+            /* 穿透触摸手势，确保滑动顺畅 */
+            pointer-events: none;
+        }
+
+        .content-layer h1 {
+            font-size: 2rem;
+            margin-bottom: 0.8rem;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
+        }
+
+        .content-layer p {
+            font-size: 1rem;
+            opacity: 0.85;
+            max-width: 85%;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+        }
+
+        /* 加载指示器 */
+        .loading-mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            height: 100svh;
+            background-color: #000;
+            z-index: 99;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1rem;
+            color: #888;
+            transition: opacity 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="loading-mask" id="loadingMask">正在加载 MP4 视频资源...</div>
+
+    <div class="video-container">
+        <!-- 适配移动端必须的属性：muted, playsinline, preload="auto" -->
+        <video 
+            id="mp4Video" 
+            class="bg-video"
+            muted 
+            playsinline 
+            preload="auto" 
+            poster="fallback-image.jpg"
+        >
+            <source src="home_animation.mp4" type="video/mp4">
+            您的浏览器不支持 HTML5 视频。
+        </video>
+    </div>
+
+    <div class="content-layer">
+        <h1>直接控制 MP4 视频</h1>
+        <p>在手机上向上或向下滑动屏幕，即时驱动视频播放帧</p>
+    </div>
+
+    <script>
+        const video = document.getElementById('mp4Video');
+        const loadingMask = document.getElementById('loadingMask');
+
+        let targetTime = 0;
+        let isSeeking = false;
+        let rafId = null;
+
+        // 初始化视频绑定
+        function initVideoControl() {
+            if (loadingMask) {
+                loadingMask.style.opacity = '0';
+                setTimeout(() => loadingMask.style.display = 'none', 300);
+            }
+
+            // 监听窗口滑动（手机触屏擦拭会自动转化为 scroll 事件）
+            window.addEventListener('scroll', onScroll, { passive: true });
+            onScroll(); // 初始化画面
+        }
+
+        // 确保视频元数据加载完毕
+        if (video.readyState >= 2) {
+            initVideoControl();
+        } else {
+            video.addEventListener('loadeddata', initVideoControl);
+        }
+
+        function onScroll() {
+            if (!video.duration) return;
+
+            // 计算滑动百分比 (0.0 到 1.0)
+            const scrollTop = window.scrollY || document.documentElement.scrollTop;
+            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollFraction = Math.max(0, Math.min(1, scrollTop / maxScroll));
+
+            // 计算目标时间
+            targetTime = scrollFraction * video.duration;
+
+            // 请求下一帧渲染
+            requestRender();
+        }
+
+        function requestRender() {
+            if (rafId) return;
+            rafId = requestAnimationFrame(updateVideoFrame);
+        }
+
+        function updateVideoFrame() {
+            rafId = null;
+
+            // 如果视频正在寻帧中 (Seeking)，暂缓下一次 seek，防止手机硬件堵塞
+            if (isSeeking) return;
+
+            // 当目标时间与视频当前播放时间差值大于微小阈值时才跳转
+            if (Math.abs(video.currentTime - targetTime) > 0.04) {
+                isSeeking = true;
+                video.currentTime = targetTime;
+            }
+        }
+
+        // 当视频完成当前帧的渲染定位后，解锁下一个寻找请求
+        video.addEventListener('seeked', () => {
+            isSeeking = false;
+            // 如果在 Seeking 期间用户还在持续滑动屏幕，追赶最新的 targetTime
+            if (Math.abs(video.currentTime - targetTime) > 0.04) {
+                requestRender();
+            }
+        });
+    </script>
+</body>
+</html>
